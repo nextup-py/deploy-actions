@@ -3,6 +3,9 @@ name: Reusable Laravel Deploy
 on:
   workflow_call:
     inputs:
+      environment_name:
+        type: string
+        required: true
       run_tests:
         type: boolean
         default: true
@@ -86,6 +89,7 @@ jobs:
       always() &&
       (needs.test.result == 'success' || needs.test.result == 'skipped')
     runs-on: ubuntu-latest
+    environment: ${{ inputs.environment_name }}
     steps:
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1
