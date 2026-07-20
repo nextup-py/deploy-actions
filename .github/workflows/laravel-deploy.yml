@@ -156,8 +156,8 @@ jobs:
             trap - ERR
             echo "[$(date '+%H:%M:%S')] === Deploy OK ===" >> "$LOG"
 
-            git tag "prod-$(date +%Y-%m-%d_%H%M)"
-            git push origin --tags
+            git tag "prod-$(date +%Y-%m-%d_%H%M)" || true
+            git push origin --tags || true
 
       - name: Health check
         run: |
