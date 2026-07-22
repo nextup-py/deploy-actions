@@ -31,6 +31,16 @@ on:
         required: true
       APP_URL:
         required: true
+      SMTP_HOST:
+        required: true
+      SMTP_PORT:
+        required: true
+      SMTP_USER:
+        required: true
+      SMTP_PASS:
+        required: true
+      NOTIFY_EMAIL:
+        required: true
 
 jobs:
   test:
@@ -171,6 +181,26 @@ jobs:
             exit 1
           fi
           echo "App is up and responding correctly."
+
+      - name: Notify deploy failure by email
+        if: failure()
+        uses: dawidd6/action-send-mail@v5
+        with:
+          server_address: ${{ secrets.SMTP_HOST }}
+          server_port: ${{ secrets.SMTP_PORT }}
+          secure: true
+          username: ${{ secrets.SMTP_USER }}
+          password: ${{ secrets.SMTP_PASS }}
+          from: ${{ secrets.SMTP_USER }}
+          to: ${{ secrets.NOTIFY_EMAIL }}
+          subject: "❌ Deploy falló: ${{ inputs.environment_name }}"
+          body: |
+            El deploy de "${{ inputs.environment_name }}" falló.
+
+            Commit intentado: ${{ github.sha }}
+            Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+            Revisá storage/logs/deploy.log en el servidor para el detalle del paso que falló.
 
   tag:
     needs: [deploy]
