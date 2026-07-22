@@ -1,0 +1,28 @@
+name: Test Email Notification (temporary)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test-email:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send test failure-notification email
+        uses: dawidd6/action-send-mail@v5
+        with:
+          server_address: ${{ secrets.SMTP_HOST }}
+          server_port: ${{ secrets.SMTP_PORT }}
+          secure: true
+          username: ${{ secrets.SMTP_USER }}
+          password: ${{ secrets.SMTP_PASS }}
+          from: ${{ secrets.SMTP_USER }}
+          to: ${{ secrets.NOTIFY_EMAIL }}
+          subject: "❌ [PRUEBA] Deploy falló: test-environment"
+          body: |
+            Este es un email de prueba del mecanismo de notificación de fallo de deploy.
+            No representa un fallo real en ningún proyecto.
+
+            Commit intentado: ${{ github.sha }}
+            Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+            Revisá storage/logs/deploy.log en el servidor para el detalle del paso que falló.
