@@ -157,9 +157,6 @@ jobs:
             trap - ERR
             echo "[$(date '+%H:%M:%S')] === Deploy OK ===" >> "$LOG"
 
-            git tag "prod-$(date +%Y-%m-%d_%H%M)" || true
-            git push origin --tags || true
-
       - name: Health check
         run: |
           echo "Waiting 10s for app to warm up..."
@@ -171,3 +168,18 @@ jobs:
             exit 1
           fi
           echo "App is up and responding correctly."
+
+  tag:
+    needs: [deploy]
+    if: needs.deploy.result == 'success'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v5
+      - name: Create and push release tag
+        run: |
+          set -e
+          TAG="prod-$(date +%Y-%m-%d_%H%M)"
+          git tag "$TAG"
+          git push origin "$TAG"
