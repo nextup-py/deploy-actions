@@ -90,6 +90,9 @@ jobs:
       (needs.test.result == 'success' || needs.test.result == 'skipped')
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment_name }}
+    concurrency:
+      group: deploy-${{ inputs.environment_name }}
+      cancel-in-progress: false
     steps:
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1
