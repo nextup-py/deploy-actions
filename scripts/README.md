@@ -17,3 +17,17 @@ Corre directamente en el VPS destino, con sudo. Es idempotente — el progreso s
 Pasos que requieren consola web externa (DNS, Resend, Google Maps, Document Root en CloudPanel, secrets de GitHub Actions) quedan como pausas manuales explícitas — el script no los automatiza.
 
 **Documentación completa** (historial de bugs corregidos, decisiones de arquitectura, automatizaciones pendientes): ver `nominapp-script-instalador-automatizado.md` en el Drive de NextUp, carpeta `05-Infraestructura`.
+
+## uninstall-nominapp-client.sh
+
+Da de baja por completo una instancia instalada con `install-nominapp-client.sh`: sitio en CloudPanel, base de datos y usuario MySQL, worker de Supervisor y SSH deploy key. Hace **backup automático** (`mysqldump` + `.env`) antes de borrar nada, en `/root/backups/<cliente>-<timestamp>/`.
+
+**Uso:**
+
+```bash
+sudo bash uninstall-nominapp-client.sh
+```
+
+Operación destructiva e irreversible (fuera del backup) — pide confirmar el slug del cliente **dos veces** antes de tocar nada. Lee el `state.file` del instalador si existe, para no tener que repetir datos.
+
+**No automatiza** (imprime instrucciones al final): eliminar la Deploy Key y los repository secrets en GitHub, el job correspondiente en `deploy.yml`, el registro DNS, y las credenciales en Bitwarden.
